@@ -1,0 +1,181 @@
+<!-- Copyright 2025 the img2dataURI Authors
+SPDX-License-Identifier: Apache-2.0 OR MIT -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image to Data URI</title>
+    <viewport content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=chevron_forward,content_copy" />
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+        body {
+            margin: 0;
+        }
+        .dflex {
+            display: flex;
+        }
+        .view {
+            font: normal 400 11pt/13pt monospace;
+            height: 100dvh;
+            &, figure {
+                background: rgba(170, 200, 255, .236);
+                flex-direction: column;
+            }
+            figure {
+                border-radius: 15pt;
+                padding: 15pt;
+                @container scroll-state(stuck: block-start) {
+                    .next2::before {
+                        backdrop-filter: blur(.5em) brightness(85%);
+                        content: "";
+                        inset: 0;
+                        position: absolute;
+                        mask-image: linear-gradient(to left bottom, white 14.6%, transparent 61.8%);
+                        mask-mode: luminance;
+                    }
+                }
+            }
+            figure:has(.hidde:checked) figcaption {
+                overflow: clip;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .next2 {
+                container-type: scroll-state;
+                inset-block-start: 0;
+                margin: auto -15pt -13pt auto;
+                place-self: safe flex-end safe flex-start;
+                position: sticky;
+                * {
+                    box-sizing: border-box;
+                }
+                &:has(.hidde:checked) {
+                    place-self: safe flex-end;
+                    label:last-child span {
+                        transform: rotate(0deg);
+                    }
+                }
+            }
+            .next2 li {
+                backdrop-filter: blur(.125em) brightness(85%);
+                background:
+                    radial-gradient(circle at 50% -38.2%, #8e8e93, transparent),
+                    radial-gradient(circle at 50% 138.2%, transparent, transparent 61.8%, #f2f2f725 85%, #f2f2f761 97.9%, transparent 99%);
+                background-origin: border-box;
+                border: 1pt solid #1c1c1e3c;
+                border-radius: 15pt;
+                box-shadow: 0 0 2pt inset #8e8e9361, 0 0 6pt inset #1c1c1e3c;
+                list-style: none;
+                margin: 7pt;
+                width: auto; height: 30pt;
+                label:first-child {
+                    margin-inline-start: -8pt;
+                    padding-inline-start: 7pt;
+                }
+                label:last-child {
+                    margin-inline-end: -8pt;
+                    padding-inline-end: 7pt;
+                    span {
+                        transform: rotate(90deg);
+                    }
+                }
+            }
+            label:has(.hidde) {
+                transition: .25s;
+                text-align: center;
+                white-space: nowrap;
+                place-items: center;
+                margin: -8pt 0;
+                width: 30pt; height: 44pt;
+                button, input {
+                    display: none;
+                }
+                span {
+                    flex: 1;
+                    inset: 0;
+                }
+                &:hover, &:active {
+                    transition: unset;
+                    filter: opacity(.618);
+                    span {
+                        transition: .25s;
+                    }
+                }
+            }
+            .result {
+                container-type: scroll-state;
+                flex: 1;
+                overflow-block: auto;
+                overflow-wrap: anywhere;
+                padding-block-end: 59pt;
+                img {
+                    align-self: center;
+                    max-width: 100%; max-height: 50dvh;
+                }
+            }
+            .userImg {
+                padding-inline: 15pt;
+                text-shadow: 0 2pt .5em #8e8e93;
+                height: 44pt;
+                &, &::before, &::after {
+                    position: fixed;
+                }
+                &, &::after {
+                    inset: 15pt;
+                }
+                inset-block-start: calc(100% - 59pt);
+                &::before, &::after {
+                    content: "";
+                    pointer-events: none;
+                    height: 86.2pt;
+                    z-index: -1;
+                }
+                &::before {
+                    backdrop-filter: blur(.5em) brightness(85%);
+                    inset: calc(100% - 86.2pt) 0 0 0;
+                    mask-image: linear-gradient(to top, white 38.2%, transparent);
+                    mask-mode: luminance;
+                }
+                &::after {
+                    background: linear-gradient(to top, rgba(158, 230, 255, .382), transparent);
+                    border-radius: 0 0 30pt 30pt;
+                    inset-block-start: calc(100% - 101.2pt);
+                }
+            }
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 20
+        }
+    </style>
+    <script defer>
+        function encodeImageFileAsURL(element) {
+            const imgResult = document.querySelector(".result");
+            const file = element.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                const dataURI = reader.result;
+                imgResult.insertAdjacentHTML('beforeend', `<figure class="dflex"><img src="${dataURI}"/><menu class="dflex next2"><li class="dflex"><label class="dflex"><span class="material-symbols-outlined">content_copy</span><button class="hidde" onclick="navigator.clipboard.writeText('${dataURI}')"></button></label><label class="dflex"><span class="material-symbols-outlined">chevron_forward</span><input class="hidde" type="checkbox" checked /></label></li></menu><span>Base64 string is: </span><figcaption><code>${dataURI}</code></figcaption></figure>`);
+                // The result is a data URL (e.g., data:image/png;base64,iVBORw0K...)
+            }
+
+            // Read the file as a data URL (Base64 string with MIME type prefix)
+            reader.readAsDataURL(file);
+        }
+    </script>
+</head>
+<body>
+    <div class="dflex view">
+        <div class="result"></div>
+        <input type="file" class="userImg" onchange="encodeImageFileAsURL(this)" />
+    </div>
+</body>
+</html>
